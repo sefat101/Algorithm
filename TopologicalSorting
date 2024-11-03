@@ -1,0 +1,66 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+// DFS function to visit nodes and push them onto a stack for topological ordering
+// - node: the current node to process
+// - vis[]: an array to keep track of visited nodes
+// - st: a stack to store nodes in topological order
+// - adj[]: adjacency list representation of the graph
+void dfs(int node, int vis[], stack<int> &st, vector<int> adj[]) {
+    vis[node] = 1;  // Mark the current node as visited
+    for (auto it : adj[node]) {  // Explore all adjacent nodes of the current node
+        if (!vis[it]) {  // If the adjacent node hasn't been visited
+            dfs(it, vis, st, adj);  // Recursively call dfs on the adjacent node
+        }
+    }
+    st.push(node);  // Once all adjacent nodes are visited, push this node onto the stack
+}
+
+// Function to perform topological sort on a directed graph
+// - V: number of vertices
+// - adj[]: adjacency list of the graph
+// Returns: a vector containing the topological order of vertices
+vector<int> topoSort(int V, vector<int> adj[]) {
+    int vis[V] = {0};  // Array to mark visited nodes, initialized to 0 (not visited)
+    stack<int> st;  // Stack to store nodes in the order of completion
+
+    // Start DFS from each unvisited node to ensure all nodes are covered
+    for (int i = 0; i < V; i++) {
+        if (!vis[i]) {  // If node `i` has not been visited
+            dfs(i, vis, st, adj);  // Perform DFS from node `i`
+        }
+    }
+    
+    // Transfer nodes from the stack to the result vector to get the topological order
+    vector<int> ans;
+    while (!st.empty()) {
+        ans.push_back(st.top());  // Add the top of the stack to the result
+        st.pop();  // Remove the node from the stack
+    }
+    
+    return ans;  // Return the topological order as a vector
+}
+
+int main() {
+    int V, E;
+    cin >> V >> E;
+    vector<int> adj[V];  // Initialize adjacency list for `V` vertices
+
+    // Read `E` edges and construct the graph as an adjacency list
+    for (int i = 0; i < E; i++) {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);  // Add a directed edge from `u` to `v`
+    }
+    
+    // Call the topological sort function and store the result
+    vector<int> result = topoSort(V, adj);
+    
+    // Output the topological order of vertices
+    for (int node : result) {
+        cout << node << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
